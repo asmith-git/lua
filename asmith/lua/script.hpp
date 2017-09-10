@@ -11,25 +11,27 @@
 //	See the License for the specific language governing permissions and
 //	limitations under the License.
 
-#ifndef ASMITH_LUA_STATE_HPP
-#define ASMITH_LUA_STATE_HPP
+#ifndef ASMITH_LUA_SCRIPT_HPP
+#define ASMITH_LUA_SCRIPT_HPP
 
-#include "lua/lua.hpp"
+#include "state.hpp"
 
 namespace asmith { namespace Lua {
-	class State {
+	class Script {
 	private:
-		lua_State* const mState;
+		State& mState;
+		bool mLoaded;
 
-		State(const State&) = delete;
-		State(State&&) = delete;
-		State& operator=(const State&) = delete;
-		State& operator=(State&&) = delete;
+		Script(const Script&) = delete;
+		Script(Script&&) = delete;
+		Script& operator=(const Script&) = delete;
+		Script& operator=(Script&&) = delete;
 	public:
-		State();
-		~State();
+		Script(State&);
+		~Script();
 
-		lua_State* getHandle() throw();
+		void load(const char*);
+		void operator()();
 	};
 }}
 
