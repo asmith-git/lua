@@ -27,6 +27,11 @@ namespace asmith { namespace Lua {
 		if(! mState) lua_close(mState);
 	}
 
+
+	void State::setGlobal(String aName) {
+		lua_setglobal(mState, aName);
+	}
+
 	lua_State* State::getHandle() throw() {
 		return mState;
 	}
