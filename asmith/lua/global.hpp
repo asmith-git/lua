@@ -42,7 +42,7 @@ namespace asmith { namespace Lua {
 			return tmp;
 		}
 
-		Global<T>& operator=(T aValue) const {
+		Global<T>& operator=(T aValue) {
 			lua_State* state = mState.getHandle();
 			implementation::push<T>(state, aValue);
 			lua_setglobal(state, mName.c_str());
