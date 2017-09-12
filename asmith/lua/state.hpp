@@ -16,6 +16,7 @@
 
 #include <cstdint>
 #include <stdexcept>
+#include <functional>
 #include "lua/lua.hpp"
 
 namespace asmith { namespace Lua {
@@ -26,6 +27,8 @@ namespace asmith { namespace Lua {
 	typedef double Number;
 	typedef const char* String;
 	typedef int(*Callback)(lua_State*);
+
+	namespace implementation {
 
 	// lua_pushX
 	template<class T>
@@ -502,6 +505,7 @@ namespace asmith { namespace Lua {
 		}
 	};
 
+	}
 	// State class
 
 	class State {
@@ -521,61 +525,69 @@ namespace asmith { namespace Lua {
 
 		template<class T>
 		void push(T aValue) {
-			asmith::Lua::push<T>(mState, aValue);
+			implementation::push<T>(mState, aValue);
 		}
 
 		template<class R, void(*FUN)()>
 		void push() {
-			typedef CFunctionWrapper<R(*)(), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, R(*FUN)(P0)>
 		void push() {
-			typedef CFunctionWrapper<R(*)(P0), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(P0), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, R(*FUN)(P0, P1)>
 		void push() {
-			typedef CFunctionWrapper<R(*)(P0, P1), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(P0, P1), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, R(*FUN)(P0, P1, P2)>
 		void push() {
-			typedef CFunctionWrapper<R(*)(P0, P1, P2), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(P0, P1, P2), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, class P3, R(*FUN)(P0, P1, P2, P3)>
 		void push() {
-			typedef CFunctionWrapper<R(*)(P0, P1, P2, P3), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(P0, P1, P2, P3), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, class P3, class P4, R(*FUN)(P0, P1, P2, P3, P4)>
 		void push() {
-			typedef CFunctionWrapper<R(*)(P0, P1, P2, P3, P4), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(P0, P1, P2, P3, P4), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, class P3, class P4, class P5, R(*FUN)(P0, P1, P2, P3, P4, P5)>
 		void push() {
-			typedef CFunctionWrapper<R(*)(P0, P1, P2, P3, P4, P5), FUN> Wrapper;
+			typedef implementation::CFunctionWrapper<R(*)(P0, P1, P2, P3, P4, P5), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class...PARAMS>
 		R call(String aName, PARAMS... aParams) {
-			return LuaFunctionWrapper<R, PARAMS...>::call(mState, aName, aParams...);
+			return implementation::LuaFunctionWrapper<R, PARAMS...>::call(mState, aName, aParams...);
+		}
+
+		template<class R, class...PARAMS>
+		std::function<R(PARAMS...)> wrapFunction(String aName) {
+			const std::string name = aName;
+			return [=](PARAMS... aParams)->R {
+				return implementation::LuaFunctionWrapper<R, PARAMS...>::call(mState, name.c_str(), aParams...);
+			};
 		}
 	};
 }}
