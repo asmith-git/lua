@@ -28,6 +28,28 @@ namespace asmith { namespace Lua {
 	typedef const char* String;
 	typedef int(*Callback)(lua_State*);
 
+	enum Type {
+		ERROR_TYPE,
+		NIL,
+		BOOLEAN,
+		INTEGER,
+		NUMBER,
+		STRING,
+		FUNCTION,
+		TABLE
+	};
+
+	template<class T>
+	static Type typeOf() {
+		return
+			std::is_same<T, Nil>::value ? NIL :
+			std::is_same<T, Boolean>::value ? BOOLEAN :
+			std::is_same<T, Integer>::value ? INTEGER :
+			std::is_same<T, Number>::value ? NUMBER :
+			std::is_same<T, String>::value ? STRING :
+			ERROR_TYPE;
+	}
+
 	namespace implementation {
 
 	// lua_pushX
@@ -589,6 +611,12 @@ namespace asmith { namespace Lua {
 				return implementation::LuaFunctionWrapper<R, PARAMS...>::call(mState, name.c_str(), aParams...);
 			};
 		}
+	};
+
+	class Object {
+	public:
+		virtual ~Object() {}
+		virtual State& getState() const = 0;
 	};
 }}
 

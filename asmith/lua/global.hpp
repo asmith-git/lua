@@ -18,8 +18,14 @@
 
 namespace asmith { namespace Lua {
 
+	class Variable : public Object {
+	public:
+		virtual ~Variable() {}
+		virtual Type getType() const = 0;
+	};
+
 	template<class T>
-	class Global{
+	class Global : public Variable {
 	private:
 		const std::string mName;
 		State& mState;
@@ -47,6 +53,16 @@ namespace asmith { namespace Lua {
 			implementation::push<T>(state, aValue);
 			lua_setglobal(state, mName.c_str());
 			return *this;
+		}
+
+		// Inherited from Variable
+
+		State& getState() const override {
+			return mState;
+		}
+
+		Type getType() const override {
+			return typeOf<T>();
 		}
 	};
 
