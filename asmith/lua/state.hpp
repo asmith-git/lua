@@ -15,6 +15,7 @@
 #define ASMITH_LUA_STATE_HPP
 
 #include <cstdint>
+#include <stdexcept>
 #include "lua/lua.hpp"
 
 namespace asmith { namespace Lua {
@@ -158,10 +159,10 @@ namespace asmith { namespace Lua {
 	// Function Wrapper
 
 	template<class F, F FUN>
-	struct FunctionWrapper;
+	struct CFunctionWrapper;
 
 	template<class R, R(*FUN)()>
-	struct FunctionWrapper<R(*)(), FUN> {
+	struct CFunctionWrapper<R(*)(), FUN> {
 		static int wrapper(lua_State* aState) {
 			R tmp = FUN();
 			push<R>(aState, tmp);
@@ -170,7 +171,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class R, class P0, R(*FUN)(P0)>
-	struct FunctionWrapper<R(*)(P0), FUN> {
+	struct CFunctionWrapper<R(*)(P0), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			R tmp = FUN(p0);
@@ -180,7 +181,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class R, class P0, class P1, R(*FUN)(P0, P1)>
-	struct FunctionWrapper<R(*)(P0, P1), FUN> {
+	struct CFunctionWrapper<R(*)(P0, P1), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -191,7 +192,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class R, class P0, class P1, class P2, R(*FUN)(P0, P1, P2)>
-	struct FunctionWrapper<R(*)(P0, P1, P2), FUN> {
+	struct CFunctionWrapper<R(*)(P0, P1, P2), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -203,7 +204,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class R, class P0, class P1, class P2, class P3, R(*FUN)(P0, P1, P2, P3)>
-	struct FunctionWrapper<R(*)(P0, P1, P2, P3), FUN> {
+	struct CFunctionWrapper<R(*)(P0, P1, P2, P3), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -216,7 +217,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class R, class P0, class P1, class P2, class P3, class P4, R(*FUN)(P0, P1, P2, P3, P4)>
-	struct FunctionWrapper<R(*)(P0, P1, P2, P3, P4), FUN> {
+	struct CFunctionWrapper<R(*)(P0, P1, P2, P3, P4), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -230,7 +231,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class R, class P0, class P1, class P2, class P3, class P4, class P5, R(*FUN)(P0, P1, P2, P3, P4, P5)>
-	struct FunctionWrapper<R(*)(P0, P1, P2, P3, P4, P5), FUN> {
+	struct CFunctionWrapper<R(*)(P0, P1, P2, P3, P4, P5), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -245,7 +246,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<void(*FUN)()>
-	struct FunctionWrapper<void(*)(), FUN> {
+	struct CFunctionWrapper<void(*)(), FUN> {
 		static int wrapper(lua_State* aState) {
 			FUN();
 			return 0;
@@ -253,7 +254,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class P0, void(*FUN)(P0)>
-	struct FunctionWrapper<void(*)(P0), FUN> {
+	struct CFunctionWrapper<void(*)(P0), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			FUN(p0);
@@ -262,7 +263,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class P0, class P1, void(*FUN)(P0, P1)>
-	struct FunctionWrapper<void(*)(P0, P1), FUN> {
+	struct CFunctionWrapper<void(*)(P0, P1), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -272,7 +273,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class P0, class P1, class P2, void(*FUN)(P0, P1, P2)>
-	struct FunctionWrapper<void(*)(P0, P1, P2), FUN> {
+	struct CFunctionWrapper<void(*)(P0, P1, P2), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -283,7 +284,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class P0, class P1, class P2, class P3, void(*FUN)(P0, P1, P2, P3)>
-	struct FunctionWrapper<void(*)(P0, P1, P2, P3), FUN> {
+	struct CFunctionWrapper<void(*)(P0, P1, P2, P3), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -295,7 +296,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class P0, class P1, class P2, class P3, class P4, void(*FUN)(P0, P1, P2, P3, P4)>
-	struct FunctionWrapper<void(*)(P0, P1, P2, P3, P4), FUN> {
+	struct CFunctionWrapper<void(*)(P0, P1, P2, P3, P4), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -308,7 +309,7 @@ namespace asmith { namespace Lua {
 	};
 
 	template<class P0, class P1, class P2, class P3, class P4, class P5, void(*FUN)(P0, P1, P2, P3, P4, P5)>
-	struct FunctionWrapper<void(*)(P0, P1, P2, P3, P4, P5), FUN> {
+	struct CFunctionWrapper<void(*)(P0, P1, P2, P3, P4, P5), FUN> {
 		static int wrapper(lua_State* aState) {
 			P0 p0 = to<P0>(aState, 1);
 			P1 p1 = to<P1>(aState, 2);
@@ -318,6 +319,186 @@ namespace asmith { namespace Lua {
 			P5 p5 = to<P5>(aState, 5);
 			FUN(p0, p1, p2, p3, p4, p5);
 			return 0;
+		}
+	};
+
+	// Lua function call
+
+	template<class R, class...PARAMS>
+	struct LuaFunctionWrapper;
+
+	template<>
+	struct LuaFunctionWrapper<void> {
+		static void call(lua_State* aState, String aName) {
+			lua_getglobal(aState, aName);
+			if(lua_pcall(aState, 0, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class P0>
+	struct LuaFunctionWrapper<void, P0> {
+		static void call(lua_State* aState, String aName, P0 aP0) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			if(lua_pcall(aState, 1, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class P0, class P1>
+	struct LuaFunctionWrapper<void, P0, P1> {
+		static void call(lua_State* aState, String aName, P0 aP0, P1 aP1) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			if(lua_pcall(aState, 2, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class P0, class P1, class P2>
+	struct LuaFunctionWrapper<void, P0, P1, P2> {
+		static void call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			if(lua_pcall(aState, 3, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class P0, class P1, class P2, class P3>
+	struct LuaFunctionWrapper<void, P0, P1, P2, P3> {
+		static void call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2, P3 aP3) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			push<P3>(aState, aP3);
+			if(lua_pcall(aState, 4, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class P0, class P1, class P2, class P3, class P4>
+	struct LuaFunctionWrapper<void, P0, P1, P2, P3, P4> {
+		static void call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2, P3 aP3, P4 aP4) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			push<P3>(aState, aP3);
+			push<P4>(aState, aP4);
+			if(lua_pcall(aState, 5, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class P0, class P1, class P2, class P3, class P4, class P5>
+	struct LuaFunctionWrapper<void, P0, P1, P2, P3, P4, P5> {
+		static void call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2, P3 aP3, P4 aP4, P5 aP5) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			push<P3>(aState, aP3);
+			push<P4>(aState, aP4);
+			push<P5>(aState, aP5);
+			if(lua_pcall(aState, 6, 0, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+		}
+	};
+
+	template<class R>
+	struct LuaFunctionWrapper<R> {
+		static R call(lua_State* aState, String aName) {
+			lua_getglobal(aState, aName);
+			if(lua_pcall(aState, 0, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
+		}
+	};
+
+	template<class R, class P0>
+	struct LuaFunctionWrapper<R, P0> {
+		static R call(lua_State* aState, String aName, P0 aP0) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			if(lua_pcall(aState, 1, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
+		}
+	};
+
+	template<class R, class P0, class P1>
+	struct LuaFunctionWrapper<R, P0, P1> {
+		static R call(lua_State* aState, String aName, P0 aP0, P1 aP1) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			if(lua_pcall(aState, 2, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
+		}
+	};
+
+	template<class R, class P0, class P1, class P2>
+	struct LuaFunctionWrapper<R, P0, P1, P2> {
+		static R call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			if(lua_pcall(aState, 3, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
+		}
+	};
+
+	template<class R, class P0, class P1, class P2, class P3>
+	struct LuaFunctionWrapper<R, P0, P1, P2, P3> {
+		static R call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2, P3 aP3) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			push<P3>(aState, aP3);
+			if(lua_pcall(aState, 4, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
+		}
+	};
+
+	template<class R, class P0, class P1, class P2, class P3, class P4>
+	struct LuaFunctionWrapper<R, P0, P1, P2, P3, P4> {
+		static R call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2, P3 aP3, P4 aP4) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			push<P3>(aState, aP3);
+			push<P4>(aState, aP4);
+			if(lua_pcall(aState, 5, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
+		}
+	};
+
+	template<class R, class P0, class P1, class P2, class P3, class P4, class P5>
+	struct LuaFunctionWrapper<R, P0, P1, P2, P3, P4, P5> {
+		static R call(lua_State* aState, String aName, P0 aP0, P1 aP1, P2 aP2, P3 aP3, P4 aP4, P5 aP5) {
+			lua_getglobal(aState, aName);
+			push<P0>(aState, aP0);
+			push<P1>(aState, aP1);
+			push<P2>(aState, aP2);
+			push<P3>(aState, aP3);
+			push<P4>(aState, aP4);
+			push<P5>(aState, aP5);
+			if(lua_pcall(aState, 6, 1, 0) != 0) throw std::runtime_error(lua_tostring(aState, -1));
+			R tmp = to<R>(aState, -1);
+			lua_pop(aState, 1);
+			return tmp;
 		}
 	};
 
@@ -345,51 +526,56 @@ namespace asmith { namespace Lua {
 
 		template<class R, void(*FUN)()>
 		void push() {
-			typedef FunctionWrapper<R(*)(), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, R(*FUN)(P0)>
 		void push() {
-			typedef FunctionWrapper<R(*)(P0), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(P0), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, R(*FUN)(P0, P1)>
 		void push() {
-			typedef FunctionWrapper<R(*)(P0, P1), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(P0, P1), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, R(*FUN)(P0, P1, P2)>
 		void push() {
-			typedef FunctionWrapper<R(*)(P0, P1, P2), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(P0, P1, P2), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, class P3, R(*FUN)(P0, P1, P2, P3)>
 		void push() {
-			typedef FunctionWrapper<R(*)(P0, P1, P2, P3), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(P0, P1, P2, P3), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, class P3, class P4, R(*FUN)(P0, P1, P2, P3, P4)>
 		void push() {
-			typedef FunctionWrapper<R(*)(P0, P1, P2, P3, P4), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(P0, P1, P2, P3, P4), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
 		}
 
 		template<class R, class P0, class P1, class P2, class P3, class P4, class P5, R(*FUN)(P0, P1, P2, P3, P4, P5)>
 		void push() {
-			typedef FunctionWrapper<R(*)(P0, P1, P2, P3, P4, P5), FUN> Wrapper;
+			typedef CFunctionWrapper<R(*)(P0, P1, P2, P3, P4, P5), FUN> Wrapper;
 			Callback callback = Wrapper::wrapper;
 			lua_pushcfunction(mState, callback);
+		}
+
+		template<class R, class...PARAMS>
+		R call(String aName, PARAMS... aParams) {
+			return LuaFunctionWrapper<R, PARAMS...>::call(mState, aName, aParams...);
 		}
 	};
 }}
